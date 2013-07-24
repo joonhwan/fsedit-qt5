@@ -1,0 +1,19 @@
+INCLUDE(setup_exe_target)
+
+SET(sources
+	main.cpp
+)
+
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/source)
+
+SET(QT_USE_QTMAIN TRUE)
+INCLUDE(${QT_USE_FILE})
+
+ADD_EXECUTABLE(fseditor WIN32 MACOSX_BUNDLE ${sources})
+TARGET_LINK_LIBRARIES(fseditor ui ${QT_LIBRARIES})
+SETUP_EXE_TARGET(fseditor)
+
+INSTALL(TARGETS fseditor DESTINATION bin)
+
+INCLUDE(tr_sources)
+ADD_TR_SOURCES(${sources})

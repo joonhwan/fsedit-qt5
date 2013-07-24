@@ -1,0 +1,12 @@
+This software is in the public domain. Everyone is free to reuse it in any way they want.
+
+Fionia Software provides this software as a service to show how Qt and CMake work well together.
+For this goal to be reached, all those reading the code must be able to reuse it.
+
+This software uses CMake and the LGPL version of Qt. See http://qt.nokia.com for information
+about Qt - pricing, licensing and documentation. See http://www.cmake.org for information about CMake.
+On Windows, this software uses NSIS to build the installer. See http://nsis.sourceforge.net for
+more information about NSIS.
+
+The icons are from the internet and freely usable for free software. Please don't reuse these
+in commercial projects.
