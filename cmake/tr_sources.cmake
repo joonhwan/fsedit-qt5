@@ -1,8 +1,12 @@
 # Translations
-# Get translations directory
+
+# get translations directory
+# Qt5's cmake support does not seems to provide variable corresponding to
+# QT_TRANSLATIONS_DIR in Qt4
 get_target_property(_qmake Qt5::qmake LOCATION)
-execute_process(COMMAND ${_qmake} -query
-  QT_INSTALL_TRANSLATIONS OUTPUT_VARIABLE QT_TRANSLATIONS_DIR OUTPUT_STRIP_TRAILING_WHITESPACE
+execute_process(COMMAND ${_qmake} -query QT_INSTALL_TRANSLATIONS
+  OUTPUT_VARIABLE QT_TRANSLATIONS_DIR
+  OUTPUT_STRIP_TRAILING_WHITESPACE
   )
 
 # Call this function with all sources that can have strings to translate
@@ -16,7 +20,7 @@ endfunction(ADD_TR_SOURCES)
 
 # Call this to retrieve the list of sources to translate
 macro(GET_TR_SOURCES _ts_source_list)
-	get_property(translation_sources GLOBAL PROPERTY ${_ts_source_list})
+  get_property(translation_sources GLOBAL PROPERTY ${_ts_source_list})
 endmacro(GET_TR_SOURCES _ts_source_list)
 
 # The only difference here is that we use MAIN_DEPENDENCY to get the source file in the sources list

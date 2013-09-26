@@ -60,7 +60,7 @@ LibUI::Translation::Translation() {
 	fsConnect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(installTranslator(const QString&)));
 
 	// Create the one for english
-	addLanguageAction("en", mapper, this);
+	addLanguageAction("ko", mapper, this); //addLanguageAction("en", mapper, this);
 
 	Q_FOREACH(const QString& filename, translationFiles) {
 		// This code translations "fseditor_xy.qm" to "xy"
@@ -94,6 +94,8 @@ void LibUI::Translation::languageChange() {
 			action->setText(tr("&English"));
 		} else if (action->objectName() == "da") {
 			action->setText(tr("&Danish"));
+		} else if (action->objectName() == "ko") {
+			action->setText(tr("&Korean"));
 		} else {
 			qWarning("Untranslated language code");
 			action->setText(action->objectName());
@@ -106,22 +108,26 @@ void LibUI::Translation::installTranslator(const QString& code) {
 
 	const QList<QTranslator*> oldTranslators(findChildren<QTranslator*>());
 
-	if (code == "en") {
+	if (code == "ko") {
 		// English means no translator installed
 		qDeleteAll(oldTranslators);
 	} else if (translationsPath.isReadable()) {
 		// Try loading the new translation
 		QScopedPointer<QTranslator> appTranslator(new QTranslator(this));
-		QScopedPointer<QTranslator> qtTranslator(new QTranslator(this));
-		if (appTranslator->load("fseditor_" + code, translationsPath.absolutePath())
-			&& qtTranslator->load("qt_" + code, translationsPath.absolutePath()))
+		if (appTranslator->load("fseditor_" + code, translationsPath.absolutePath()))
 		{
+			QScopedPointer<QTranslator> qtTranslator;
+			if(code!="en") {
+				qtTranslator.reset(new QTranslator(this));
+				qtTranslator->load("qt_" + code, translationsPath.absolutePath());
+			};
 			// Delete the old translators
 			qDeleteAll(oldTranslators);
-
 			// Install the new ones
 			QCoreApplication::instance()->installTranslator(appTranslator.take());
-			QCoreApplication::instance()->installTranslator(qtTranslator.take());
+			if(qtTranslator) {
+				QCoreApplication::instance()->installTranslator(qtTranslator.take());
+			}
 		}
 	}
 }

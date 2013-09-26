@@ -4,64 +4,82 @@
 #include <QMainWindow>
 
 class QUndoCommand;
+class QScrollArea;
 
 namespace LibModel { class Document; }
 
 namespace LibUI {
-	class EditWidget;
 
-	class MainWindow : public QMainWindow {
-		Q_OBJECT
+class EditWidget;
+class EditorArea : public QWidget
+{
+	Q_OBJECT
+public:
+	EditorArea(LibModel::Document* doc, QWidget* parent = 0);
+	QScrollArea* scrollArea() {
+		return m_scrollArea;
+	}
+	EditWidget* editor() {
+		return m_editor;
+	}
+protected:
+	QScrollArea* m_scrollArea;
+	EditWidget* m_editor;
+};
 
-	public:
-		explicit MainWindow(QWidget* parent=0, Qt::WindowFlags f=0);
-		virtual ~MainWindow();
+class MainWindow : public QMainWindow {
+	Q_OBJECT
 
-	Q_SIGNALS:
-		void showScriptWindow();
+public:
+	explicit MainWindow(QWidget* parent=0, Qt::WindowFlags f=0);
+	virtual ~MainWindow();
 
-	protected:
-		void closeEvent(QCloseEvent*);
-		void changeEvent(QEvent*);
+Q_SIGNALS:
+	void showScriptWindow();
 
-	private Q_SLOTS:
-		void filenameChanged(const QString&);
+protected:
+	void closeEvent(QCloseEvent*);
+	void changeEvent(QEvent*);
 
-		void documentAdded(LibModel::Document*);
-		void documentClosed(LibModel::Document*);
+private Q_SLOTS:
+	void filenameChanged(const QString&);
 
-		void on_tabWidget_currentChanged(int);
-		void on_fileNew_triggered();
-		void on_fileOpen_triggered();
-		void on_fileSave_triggered();
-		void on_fileSaveAs_triggered();
-		void on_fileClose_triggered();
-		void on_fileQuit_triggered();
-		void on_helpAboutDialog_triggered();
+	void documentAdded(LibModel::Document*);
+	void documentClosed(LibModel::Document*);
 
-		void stackCleanChanged(bool clean);
+	void on_tabWidget_currentChanged(int);
+	void on_fileNew_triggered();
+	void on_fileOpen_triggered();
+	void on_fileSave_triggered();
+	void on_fileSaveAs_triggered();
+	void on_fileClose_triggered();
+	void on_fileQuit_triggered();
+	void on_helpAboutDialog_triggered();
 
-	private:
-		/// If doc is 0, all documents are considered
-		bool testIfClose(LibModel::Document* doc = 0);
+	void stackCleanChanged(bool clean);
 
-		/**
-		 * This will save the current file. If it doesn't have a filename, it will call saveAs.
-		 * Returns true, if the file was saved.
-		 */
-		bool save(LibModel::Document* doc);
+private:
+	/// If doc is 0, all documents are considered
+	bool testIfClose(LibModel::Document* doc = 0);
 
-		/**
-		 * This opens a file dialog for the filename and saves the file.
-		 * Returns true, if the file was saved.
-		 */
-		bool saveAs(LibModel::Document* doc);
+	/**
+	 * This will save the current file. If it doesn't have a filename, it will call saveAs.
+	 * Returns true, if the file was saved.
+	 */
+	bool save(LibModel::Document* doc);
 
-		void languageChange();
+	/**
+	 * This opens a file dialog for the filename and saves the file.
+	 * Returns true, if the file was saved.
+	 */
+	bool saveAs(LibModel::Document* doc);
 
-		struct MainWindowPrivate;
-		MainWindowPrivate* d;
-	};
+	void languageChange();
+
+	struct MainWindowPrivate;
+	MainWindowPrivate* d;
+};
+
 }
 
 #endif // LIBUI_MAINWINDOW_H

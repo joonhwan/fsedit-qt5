@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="da_DK">
+<TS version="2.0" language="en_US">
 <context>
     <name>CloseDialog</name>
     <message>
@@ -38,7 +38,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../source/libui/mainwindow.cpp" line="39"/>
         <source>안녕하세요. 한글 tr테스트입니다.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hello, This is tr test</translation>
     </message>
 </context>
 <context>

@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "editwidget.h"
 #include "closedialog.h"
 #include "translation.h"
@@ -9,6 +9,7 @@
 #include <libmodel/document.h>
 #include <libmodel/documentmanager.h>
 
+#include <QWidget>
 #include <QDir>
 #include <QFileInfo>
 #include <QSharedPointer>
@@ -22,16 +23,36 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QScrollArea>
+#include <QVBoxLayout>
+
+LibUI::
+EditorArea::EditorArea(LibModel::Document* doc, QWidget* parent)
+	: QWidget(parent)
+{
+	m_editor = new EditWidget(doc);
+
+	m_scrollArea = new QScrollArea;
+	m_scrollArea->setWidget(m_editor);
+	m_scrollArea->setWidgetResizable(true);
+	m_scrollArea->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
+	QLabel* label = new QLabel(tr("안녕하세요. 한글 tr테스트입니다."));
+
+	QVBoxLayout* layout = new QVBoxLayout;
+	layout->addWidget(m_scrollArea);
+	layout->addWidget(label);
+	setLayout(layout);
+}
 
 struct LibUI::MainWindow::MainWindowPrivate : public Ui::MainWindow {
 	EditWidget* editorAt(int index) {
-		QScrollArea* scrollArea = qobject_cast<QScrollArea*>(tabWidget->widget(index));
-		return qobject_cast<EditWidget*>(scrollArea->widget());
+		EditorArea* ea = qobject_cast<EditorArea*>(tabWidget->widget(index));
+		return qobject_cast<EditWidget*>(ea->editor());
 	}
 
 	EditWidget* currentEditor() {
-		QScrollArea* scrollArea = qobject_cast<QScrollArea*>(tabWidget->currentWidget());
-		return qobject_cast<EditWidget*>(scrollArea->widget());
+		EditorArea* ea = qobject_cast<EditorArea*>(tabWidget->currentWidget());
+		return qobject_cast<EditWidget*>(ea->editor());
 	}
 
 	EditWidget* documentEditor(LibModel::Document* doc) {
@@ -189,20 +210,18 @@ void LibUI::MainWindow::on_helpAboutDialog_triggered() {
 	helpDialog.exec();
 }
 
-void LibUI::MainWindow::documentAdded(LibModel::Document* doc) {
-	QScrollArea* scrollArea = new QScrollArea;
-	EditWidget* editor = new EditWidget(doc);
+void LibUI::MainWindow::documentAdded(LibModel::Document* doc)
+{
+	EditorArea* ea = new EditorArea(doc);
+	QScrollArea* scrollArea = ea->scrollArea(); //new QScrollArea;
+	EditWidget* editor = ea->editor(); // new EditWidget(doc);
 
 	fsConnect(editor, SIGNAL(filenameChanged(const QString&)), this, SLOT(filenameChanged(const QString&)));
-
 	fsConnect(editor->undoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(stackCleanChanged(bool)));
-	d->undoGroup.addStack(editor->undoStack());
 
-	scrollArea->setWidget(editor);
-	scrollArea->setWidgetResizable(true);
-	scrollArea->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-	d->tabWidget->addTab(scrollArea, tr("New file"));
-	d->tabWidget->setCurrentWidget(scrollArea);
+	d->undoGroup.addStack(editor->undoStack());
+	d->tabWidget->addTab(ea, tr("New file"));
+	d->tabWidget->setCurrentWidget(ea);
 }
 
 void LibUI::MainWindow::documentClosed(LibModel::Document* doc) {
